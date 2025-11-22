@@ -1,0 +1,175 @@
+---
+const prizes = Array.from({ length: 44 }, (_, i) => ({ id: i + 1, amount: i === 0 ? 50000 : 1000 }));
+---
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sorteos Esau</title>
+    <meta name="description" content="Participa en Sorteos Esau y gana premios en efectivo." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0b0b14;
+        --surface: #141428;
+        --primary: #e53935;
+        --primary-600: #c62828;
+        --accent: #ffb300;
+        --accent-700: #ff8f00;
+        --success: #2ecc71;
+        --text: #f5f7ff;
+        --muted: #a9b0c6;
+        --glow: 0 0 40px rgba(255, 179, 0, 0.2), 0 0 80px rgba(229, 57, 53, 0.15);
+      }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: radial-gradient(1000px 400px at 20% -5%, rgba(255, 179, 0, 0.15), transparent),
+                    radial-gradient(800px 300px at 80% -10%, rgba(229, 57, 53, 0.22), transparent),
+                    var(--bg);
+        color: var(--text);
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+      header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 0; position: sticky; top: 0; backdrop-filter: blur(8px);
+      }
+      .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: 0.4px; }
+      .logo {
+        width: 40px; height: 40px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), var(--primary));
+        box-shadow: var(--glow);
+        display: grid; place-items: center; color: #111; font-weight: 800;
+      }
+      .cta {
+        display: inline-flex; align-items: center; gap: 10px;
+        background: linear-gradient(180deg, var(--primary), var(--primary-600));
+        color: #fff; border: none; border-radius: 12px; padding: 12px 18px; font-weight: 700;
+        box-shadow: 0 10px 24px rgba(229, 57, 53, 0.35);
+        transition: transform .15s ease, box-shadow .15s ease;
+      }
+      .cta:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(229, 57, 53, 0.45); }
+      .hero {
+        margin-top: 12px;
+        border-radius: 18px;
+        background:
+          radial-gradient(600px 200px at 20% 0%, rgba(255, 179, 0, 0.25), transparent),
+          radial-gradient(600px 200px at 80% 0%, rgba(229, 57, 53, 0.25), transparent),
+          linear-gradient(180deg, rgba(20,20,40,0.9), rgba(20,20,40,0.6));
+        box-shadow: var(--glow);
+        padding: 36px;
+      }
+      .hero h1 { font-size: clamp(28px, 6vw, 44px); margin: 0 0 8px; }
+      .hero p { color: var(--muted); margin: 0 0 18px; font-size: 16px; }
+      .badges { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+      .badge {
+        background: rgba(255, 255, 255, 0.06); color: var(--text);
+        border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px; padding: 8px 12px; font-weight: 600;
+      }
+      .section-title { display: flex; align-items: baseline; justify-content: space-between; margin: 28px 0 12px; }
+      .section-title h2 { margin: 0; font-size: 22px; }
+      .filters { display: flex; gap: 8px; }
+      .filter {
+        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255,255,255,0.08);
+        color: var(--muted); border-radius: 10px; padding: 8px 12px; font-weight: 600;
+      }
+      .filter.active { color: #111; background: linear-gradient(180deg, var(--accent), var(--accent-700)); border: none; }
+      .grid {
+        display: grid; grid-template-columns: repeat(1, 1fr); gap: 16px;
+      }
+      @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+      .card {
+        position: relative; overflow: hidden; border-radius: 16px; background: var(--surface);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+        transition: transform .18s ease, box-shadow .18s ease;
+      }
+      .card:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(0,0,0,0.55); }
+      .card-head {
+        display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 0;
+      }
+      .prize-tag {
+        background: linear-gradient(135deg, var(--accent), var(--primary)); color: #111;
+        font-weight: 800; border-radius: 10px; padding: 6px 10px; box-shadow: var(--glow);
+      }
+      .chance {
+        color: var(--success); font-weight: 700;
+      }
+      .card-body { padding: 14px; display: grid; gap: 10px; }
+      .amount { font-size: 22px; font-weight: 800; letter-spacing: 0.4px; }
+      .sub { color: var(--muted); font-size: 14px; }
+      .progress {
+        height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;
+      }
+      .progress > i { display: block; height: 100%; width: 60%; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+      .actions { display: flex; gap: 10px; }
+      .buy {
+        flex: 1; background: linear-gradient(180deg, var(--primary), var(--primary-600)); color: #fff; border: none;
+        padding: 10px 12px; border-radius: 10px; font-weight: 800; box-shadow: 0 6px 18px rgba(229,57,53,0.3);
+      }
+      .details {
+        background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 12px; border-radius: 10px; font-weight: 700;
+      }
+      footer { text-align: center; color: var(--muted); padding: 32px 0; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="brand">
+          <div class="logo">SE</div>
+          <div>Sorteos Esau</div>
+        </div>
+        <button class="cta">Participa ahora</button>
+      </header>
+
+      <section class="hero">
+        <h1>Gana premios en efectivo todos los días</h1>
+        <p>Elige tu premio favorito, compra tu participación y entra al sorteo. Premios garantizados y emoción constante.</p>
+        <div class="badges">
+          <div class="badge">Pagos seguros</div>
+          <div class="badge">Sorteos verificados</div>
+          <div class="badge">Entrega inmediata a ganadores</div>
+        </div>
+      </section>
+
+      <div class="section-title">
+        <h2>Premios en juego</h2>
+        <div class="filters">
+          <div class="filter active">Todos</div>
+          <div class="filter">Más populares</div>
+          <div class="filter">Últimas horas</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        {prizes.map((p) => (
+          <div class="card">
+            <div class="card-head">
+              <div class="prize-tag">Premio {p.id}</div>
+              <div class="chance">Alta probabilidad</div>
+            </div>
+            <div class="card-body">
+              <div class="amount">${p.amount.toLocaleString('es-MX')} MXN</div>
+              <div class="sub">Participa y compite por ganar este premio.</div>
+              <div class="progress"><i style={`width:${p.id === 1 ? '80%' : '55%'}`}></i></div>
+              <div class="actions">
+                <button class="buy">Participar</button>
+                <button class="details">Detalles</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <footer>
+        © {new Date().getFullYear()} Sorteos Esau • Términos y condiciones
+      </footer>
+    </div>
+  </body>
+</html>
